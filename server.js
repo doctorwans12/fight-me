@@ -131,6 +131,12 @@ async function sendWelcomeEmail(email) {
   return true;
 }
 
+function shouldSendWelcome(user) {
+  if (!user) return true;
+  if (user.currentWeek > 0) return false;
+  return !user.lastSentAt;
+}
+
 // ---- CRON: every day at 09:00 server time ----
 cron.schedule("0 9 * * *", async () => {
   try {
@@ -230,6 +236,7 @@ app.get("/success", async (req, res) => {
     // dacă e abonament -> salvăm userul și îi trimitem welcome imediat
     if (resolvedIsSub === "true") {
       const userExists = db.get("subscribers").find({ email: customerEmail }).value();
+      const shouldWelcome = shouldSendWelcome(userExists);
 
       if (!userExists) {
         db.get("subscribers")
@@ -245,10 +252,12 @@ app.get("/success", async (req, res) => {
 
         console.log(`👤 New subscriber saved: ${customerEmail}`);
 
-        try {
-          await sendWelcomeEmail(customerEmail);
-        } catch (err) {
-          console.log("❌ Welcome email error:", err.message);
+        if (shouldWelcome) {
+          try {
+            await sendWelcomeEmail(customerEmail);
+          } catch (err) {
+            console.log("❌ Welcome email error:", err.message);
+          }
         }
       } else {
         // dacă există deja, asigurăm isSub true
@@ -256,6 +265,14 @@ app.get("/success", async (req, res) => {
           .find({ email: customerEmail })
           .assign({ isSub: true, plan: resolvedPlan || userExists.plan })
           .write();
+
+        if (shouldWelcome) {
+          try {
+            await sendWelcomeEmail(customerEmail);
+          } catch (err) {
+            console.log("❌ Welcome email error:", err.message);
+          }
+        }
       }
     }
 
