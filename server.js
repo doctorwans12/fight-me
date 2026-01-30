@@ -60,6 +60,8 @@ const transporter = nodemailer.createTransport({
 });
 
 // ---- HELPERS ----
+const allowedPlans = new Set(["striker", "grappler", "hybrid", "traditional"]);
+
 function getBaseUrl(req) {
   // Dacă ai BASE_URL în env (pentru deploy), îl folosim.
   // Altfel, îl construim din request.
@@ -182,8 +184,7 @@ app.get("/pay-session", async (req, res) => {
   const choice = (req.query.choice || "").trim();
 
   // validate choice (so you don’t store junk)
-  const allowedPlans = ["striker", "grappler", "hybrid", "traditional", "power", "speed", "stamina"];
-  if (!allowedPlans.includes(choice)) {
+  if (!allowedPlans.has(choice)) {
     return res.status(400).send("Invalid plan/choice.");
   }
 
@@ -227,6 +228,8 @@ app.get("/success", async (req, res) => {
     const sessionIsSub = session?.metadata?.isSub;
     const resolvedPlan = sessionPlan || plan || "";
     const resolvedIsSub = sessionIsSub || isSub || "";
+    const redirectPlan = allowedPlans.has(resolvedPlan) ? resolvedPlan : "";
+    const storedPlan = allowedPlans.has(resolvedPlan) ? resolvedPlan : "unknown";
 
     if (!customerEmail) {
       console.log("❌ No email found in Stripe session.");
@@ -243,7 +246,7 @@ app.get("/success", async (req, res) => {
           .push({
             email: customerEmail,
             currentWeek: 0,
-            plan: resolvedPlan || "unknown",
+            plan: storedPlan,
             isSub: true,
             createdAt: new Date().toISOString(),
             lastSentAt: null,
@@ -263,7 +266,7 @@ app.get("/success", async (req, res) => {
         // dacă există deja, asigurăm isSub true
         db.get("subscribers")
           .find({ email: customerEmail })
-          .assign({ isSub: true, plan: resolvedPlan || userExists.plan })
+          .assign({ isSub: true, plan: storedPlan || userExists.plan })
           .write();
 
         if (shouldWelcome) {
@@ -277,7 +280,7 @@ app.get("/success", async (req, res) => {
     }
 
     // redirect back to frontend with params
-    return res.redirect(`/?session_id=${encodeURIComponent(session_id)}&plan=${encodeURIComponent(resolvedPlan)}&isSub=${encodeURIComponent(resolvedIsSub)}`);
+    return res.redirect(`/?session_id=${encodeURIComponent(session_id)}&plan=${encodeURIComponent(redirectPlan)}&isSub=${encodeURIComponent(resolvedIsSub)}`);
   } catch (err) {
     console.error("Success Route Error:", err.message);
     return res.redirect("/");
