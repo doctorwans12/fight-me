@@ -99,166 +99,111 @@ Your fighting style is your signature—define it, sharpen it, and own it.
 
 <script>
     const questions = [
-        {
-            q: "What is your main goal?",
-            a: [
-                { t: "Muscle Mass (Bulk)", c: "striker" },
-                { t: "Weight Loss (Cut)", c: "hybrid" },
-                { t: "Maintenance/Toning", c: "traditional" }
-            ]
-        },
-        {
-            q: "How many days per week can you go to the gym?",
-            a: [
-                { t: "1–2 days", c: "traditional" },
-                { t: "3–4 days", c: "hybrid" },
-                { t: "5+ days", c: "striker" }
-            ]
-        },
-        {
-            q: "How long do you want a training session to last?",
-            a: [
-                { t: "45 min", c: "traditional" },
-                { t: "60 min", c: "hybrid" },
-                { t: "90+ min", c: "grappler" }
-            ]
-        },
-        {
-            q: "What is your experience level?",
-            a: [
-                { t: "Beginner", c: "traditional" },
-                { t: "Intermediate", c: "hybrid" },
-                { t: "Advanced", c: "striker" }
-            ]
-        },
-        {
-            q: "Do you have access to a fully equipped gym?",
-            a: [
-                { t: "Yes", c: "striker" },
-                { t: "Only dumbbells / home workouts", c: "traditional" },
-                { t: "Only basic machines", c: "hybrid" }
-            ]
-        },
-        {
-            q: "Which muscle group is your priority?",
-            a: [
-                { t: "Chest/Arms", c: "striker" },
-                { t: "Legs/Glutes", c: "grappler" },
-                { t: "Full Body", c: "hybrid" }
-            ]
-        },
-        {
-            q: "How is your sleep usually?",
-            a: [
-                { t: "Under 6 hours", c: "striker" },
-                { t: "7–8 hours", c: "hybrid" },
-                { t: "Over 8 hours", c: "traditional" }
-            ]
-        },
-        {
-            q: "How stressful is your workday?",
-            a: [
-                { t: "Physical work", c: "striker" },
-                { t: "Office (Sedentary)", c: "traditional" },
-                { t: "Very stressful", c: "grappler" }
-            ]
-        },
-        {
-            q: "Do you prefer training with heavy weights?",
-            a: [
-                { t: "Yes, strength-focused", c: "striker" },
-                { t: "No, I prefer higher reps", c: "traditional" },
-                { t: "Mixed", c: "hybrid" }
-            ]
-        },
-        {
-            q: "Do you currently do cardio?",
-            a: [
-                { t: "Not at all", c: "striker" },
-                { t: "1–2 times per week", c: "hybrid" },
-                { t: "Daily", c: "grappler" }
-            ]
-        },
-        {
-            q: "Do you have joint or back issues?",
-            a: [
-                { t: "No", c: "striker" },
-                { t: "Minor pain", c: "traditional" },
-                { t: "Chronic problems", c: "grappler" }
-            ]
-        },
-        {
-            q: "Do you currently take supplements?",
-            a: [
-                { t: "No", c: "traditional" },
-                { t: "Only Protein/Creatine", c: "hybrid" },
-                { t: "Many supplements", c: "striker" }
-            ]
-        },
-        {
-            q: "How fast do you recover after training?",
-            a: [
-                { t: "Slow (strong soreness)", c: "grappler" },
-                { t: "Normal", c: "traditional" },
-                { t: "Very fast", c: "striker" }
-            ]
-        },
-        {
-            q: "Do you have a training partner?",
-            a: [
-                { t: "Alone", c: "traditional" },
-                { t: "With someone", c: "hybrid" },
-                { t: "With a coach", c: "striker" }
-            ]
-        },
-        {
-            q: "How do you track your progress?",
-            a: [
-                { t: "By feel", c: "traditional" },
-                { t: "Scale", c: "striker" },
-                { t: "App/Journal", c: "hybrid" }
-            ]
-        },
-        {
-            q: "Are you willing to follow a strict diet?",
-            a: [
-                { t: "Yes", c: "striker" },
-                { t: "Only approximately", c: "hybrid" },
-                { t: "No, I just want to exercise", c: "traditional" }
-            ]
-        },
-        {
-            q: "What demotivates you most often?",
-            a: [
-                { t: "Lack of time", c: "traditional" },
-                { t: "Lack of fast results", c: "striker" },
-                { t: "Fatigue", c: "grappler" }
-            ]
-        },
-        {
-            q: "Do you prefer compound exercises (e.g. squats)?",
-            a: [
-                { t: "Yes", c: "striker" },
-                { t: "I prefer machines", c: "traditional" },
-                { t: "Doesn’t matter", c: "hybrid" }
-            ]
-        },
-        {
-            q: "Have you followed a workout plan before?",
-            a: [
-                { t: "Never", c: "traditional" },
-                { t: "I’ve tried a few", c: "hybrid" },
-                { t: "Yes, consistently", c: "striker" }
-            ]
-        },
-        {
-            q: "How much water do you drink daily?",
-            a: [
-                { t: "Under 1L", c: "traditional" },
-                { t: "2–3L", c: "hybrid" },
-                { t: "Over 3L", c: "striker" }
-            ]
-        }
+     {
+  q: "How do you prefer to win a fight?",
+  a: [
+    { t: "By knocking the opponent out", c: "striker" },
+    { t: "By wearing them down and controlling them", c: "grappler" },
+    { t: "By adapting and using every option", c: "hybrid" }
+  ]
+},
+{
+  q: "What is your biggest strength in combat?",
+  a: [
+    { t: "Speed and striking power", c: "striker" },
+    { t: "Balance, pressure, and control", c: "grappler" },
+    { t: "Versatility and fight IQ", c: "hybrid" }
+  ]
+},
+{
+  q: "When the fight starts, you usually:",
+  a: [
+    { t: "Take the center and pressure immediately", c: "striker" },
+    { t: "Close distance and look for control", c: "grappler" },
+    { t: "Read the opponent first", c: "hybrid" }
+  ]
+},
+{
+  q: "What range do you feel most comfortable in?",
+  a: [
+    { t: "Long to mid-range (punching)", c: "striker" },
+    { t: "Clinch or close contact", c: "grappler" },
+    { t: "All ranges", c: "hybrid" }
+  ]
+},
+{
+  q: "Your ideal training session focuses on:",
+  a: [
+    { t: "Pad work, bags, and combinations", c: "striker" },
+    { t: "Drills, control, and endurance", c: "grappler" },
+    { t: "Transitions and mixed training", c: "hybrid" }
+  ]
+},
+{
+  q: "How do you react under pressure?",
+  a: [
+    { t: "I become more aggressive", c: "striker" },
+    { t: "I stay calm and slow the fight down", c: "grappler" },
+    { t: "I adjust and change strategy", c: "hybrid" }
+  ]
+},
+{
+  q: "What frustrates you most in a fight?",
+  a: [
+    { t: "Missing clean shots", c: "striker" },
+    { t: "Losing control or position", c: "grappler" },
+    { t: "Being predictable", c: "hybrid" }
+  ]
+},
+{
+  q: "How would your coach describe you?",
+  a: [
+    { t: "Explosive and dangerous", c: "striker" },
+    { t: "Patient and controlling", c: "grappler" },
+    { t: "Smart and adaptable", c: "hybrid" }
+  ]
+},
+{
+  q: "What is your main goal in training?",
+  a: [
+    { t: "Finish fights decisively", c: "striker" },
+    { t: "Dominate and exhaust opponents", c: "grappler" },
+    { t: "Be ready for any situation", c: "hybrid" }
+  ]
+},
+{
+  q: "Which mindset fits you best?",
+  a: [
+    { t: "Attack is the best defense", c: "striker" },
+    { t: "Control the fight, control the outcome", c: "grappler" },
+    { t: "Adapt, survive, and win", c: "hybrid" }
+  ]
+},
+{
+  q: "How do you pace a fight?",
+  a: [
+    { t: "Fast and aggressive", c: "striker" },
+    { t: "Slow, heavy pressure", c: "grappler" },
+    { t: "Variable depending on opponent", c: "hybrid" }
+  ]
+},
+{
+  q: "What matters more to you?",
+  a: [
+    { t: "Power and precision", c: "striker" },
+    { t: "Position and dominance", c: "grappler" },
+    { t: "Timing and decision-making", c: "hybrid" }
+  ]
+},
+{
+  q: "If the fight goes wrong, you:",
+  a: [
+    { t: "Push harder to finish it", c: "striker" },
+    { t: "Slow it down and regain control", c: "grappler" },
+    { t: "Change tactics completely", c: "hybrid" }
+  ]
+}
+];
     ];
 
     const resultsData = {
@@ -360,3 +305,4 @@ Your fighting style is your signature—define it, sharpen it, and own it.
 </script>
 </body>
 </html>
+
