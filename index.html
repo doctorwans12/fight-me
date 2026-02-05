@@ -91,8 +91,8 @@ Do you wish to see your professional result?
 
 <div id="footerBar" class="float-bar">
     <span class="float-title">Do you wish to see your professional roadmap?</span>
-    <button class="btn btn-wish" onclick="pay(true)">I Wish(subscribe)</button>
-    <button class="btn btn-no" onclick="pay(false)">I Don't Wish(only results)</button>
+    <button class="btn btn-wish" onclick="pay(true)">I Wish</button>
+    <button class="btn btn-no" onclick="pay(false)">I Don't Wish</button>
 </div>
 
 <script>
@@ -272,28 +272,8 @@ Do you wish to see your professional result?
     function pay(sub) {
         const choice = scoreKeys.reduce((best, key) => scores[key] > scores[best] ? key : best, scoreKeys[0]);
         localStorage.setItem("lastPlanChoice", choice);
-        fetch("https://backend-ul-tau.onrender.com/pay/session", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                subscribe: sub,
-                choice
-            })
-        })
-        .then(res => {
-            if (!res.ok) throw new Error("Failed to create payment session");
-            return res.json();
-        })
-        .then(data => {
-            if (!data?.url) throw new Error("Missing checkout URL");
-            window.location.href = data.url;
-        })
-        .catch(err => {
-            console.error("Payment error:", err);
-            alert("Could not start payment. Please try again.");
-        });
+        const checkoutUrl = `https://backend-ul-tau.onrender.com/pay-session?subscribe=${sub}&choice=${encodeURIComponent(choice)}`;
+        window.location.href = checkoutUrl;
     }
 
     window.onload = () => {
@@ -323,5 +303,3 @@ Do you wish to see your professional result?
 </script>
 </body>
 </html>
-
-
