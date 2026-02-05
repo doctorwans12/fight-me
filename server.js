@@ -15,7 +15,7 @@ const REQUIRED_ENVS = [
   "PRICE_ID_SUB",
   "PRICE_ID_ONCE",
   "GMAIL_USER",
-  "GMAIL_PASS",
+  "GMAIL_PASS"
 ];
 
 for (const k of REQUIRED_ENVS) {
@@ -46,7 +46,6 @@ db.defaults({ subscribers: [] }).write();
 // ---- APP ----
 const app = express();
 app.set("trust proxy", 1); // ✅ important pentru Railway (https + proxy)
-app.use(express.json());
 
 // Static files (index.html, logo.png, favicon.png etc.)
 app.use(express.static(__dirname));
@@ -61,11 +60,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.GMAIL_PASS,
   },
   tls: { rejectUnauthorized: false },
-
-  // ✅ ca să nu blocheze mult request-ul dacă Gmail e lent
-  connectionTimeout: 8000,
-  greetingTimeout: 8000,
-  socketTimeout: 8000,
 });
 
 // ---- HELPERS ----
@@ -80,7 +74,11 @@ function getBaseUrl(req) {
 
 function safeEmailFromSession(session) {
   // Stripe poate avea email în customer_details sau în customer_email (în funcție de config)
-  return session?.customer_details?.email || session?.customer_email || null;
+  return (
+    session?.customer_details?.email ||
+    session?.customer_email ||
+    null
+  );
 }
 
 function pickNextMessage(user) {
@@ -185,26 +183,6 @@ app.get("/health", (req, res) => {
 
 // 1) PAYMENT SESSION
 // Frontend calls: /pay-session?subscribe=true&choice=striker
-async function createCheckoutSession({ isSub, choice, baseUrl }) {
-  const priceId = isSub ? process.env.PRICE_ID_SUB : process.env.PRICE_ID_ONCE;
-
-  return stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    line_items: [{ price: priceId, quantity: 1 }],
-    mode: isSub ? "subscription" : "payment",
-
-    metadata: {
-      plan: choice,
-      isSub: String(isSub),
-    },
-
-    success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}&plan=${encodeURIComponent(
-      choice
-    )}&isSub=${isSub}`,
-    cancel_url: `${baseUrl}/`,
-  });
-}
-
 app.get("/pay-session", async (req, res) => {
   const isSub = req.query.subscribe === "true";
   const choice = (req.query.choice || "").trim();
@@ -214,108 +192,103 @@ app.get("/pay-session", async (req, res) => {
     return res.status(400).send("Invalid plan/choice.");
   }
 
+  const priceId = isSub ? process.env.PRICE_ID_SUB : process.env.PRICE_ID_ONCE;
+
   try {
     const baseUrl = getBaseUrl(req);
-    const session = await createCheckoutSession({ isSub, choice, baseUrl });
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [{ price: priceId, quantity: 1 }],
+      mode: isSub ? "subscription" : "payment",
+
+      // helpful metadata
+      metadata: {
+        plan: choice,
+        isSub: String(isSub),
+      },
+
+      success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}&plan=${encodeURIComponent(choice)}&isSub=${isSub}`,
+      cancel_url: `${baseUrl}/`,
+    });
 
     return res.redirect(303, session.url);
   } catch (err) {
-    console.error("Stripe FULL ERROR:", err);
-    return res.status(500).send(err.message);
+    console.error("Stripe FULL ERROR:", err); // ✅ vezi eroarea reală în Railway Logs
+    return res.status(500).send(err.message); // ✅ nu mai ascunde mesajul
   }
 });
 
-// Frontend calls: POST /pay/session with JSON body { subscribe, choice }
-app.post("/pay/session", async (req, res) => {
-  const isSub = req.body?.subscribe === true || req.body?.subscribe === "true";
-  const choice = (req.body?.choice || "").trim();
-
-  if (!allowedPlans.has(choice)) {
-    return res.status(400).json({ error: "Invalid plan/choice." });
-  }
-
-  try {
-    const baseUrl = getBaseUrl(req);
-    const session = await createCheckoutSession({ isSub, choice, baseUrl });
-    return res.json({ url: session.url });
-  } catch (err) {
-    console.error("Stripe FULL ERROR:", err);
-    return res.status(500).json({ error: err.message });
-  }
-});
-
-// 2) SUCCESS (FAST)
-// - Redirect imediat către user
-// - DB + welcome email rulează în fundal
+// 2) SUCCESS
 app.get("/success", async (req, res) => {
   const { session_id, plan, isSub } = req.query;
+
   if (!session_id) return res.redirect("/");
 
-  let session;
   try {
-    session = await stripe.checkout.sessions.retrieve(session_id);
-  } catch (err) {
-    console.error("Success Route Error (stripe retrieve):", err.message);
-    return res.redirect("/");
-  }
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    const customerEmail = safeEmailFromSession(session);
+    const sessionPlan = session?.metadata?.plan;
+    const sessionIsSub = session?.metadata?.isSub;
+    const resolvedPlan = sessionPlan || plan || "";
+    const resolvedIsSub = sessionIsSub || isSub || "";
+    const redirectPlan = allowedPlans.has(resolvedPlan) ? resolvedPlan : "";
+    const storedPlan = allowedPlans.has(resolvedPlan) ? resolvedPlan : "unknown";
 
-  const customerEmail = safeEmailFromSession(session);
-  if (!customerEmail) {
-    console.log("❌ No email found in Stripe session.");
-    return res.redirect("/");
-  }
+    if (!customerEmail) {
+      console.log("❌ No email found in Stripe session.");
+      return res.redirect("/");
+    }
 
-  const sessionPlan = session?.metadata?.plan;
-  const sessionIsSub = session?.metadata?.isSub;
+    // dacă e abonament -> salvăm userul și îi trimitem welcome imediat
+    if (resolvedIsSub === "true") {
+      const userExists = db.get("subscribers").find({ email: customerEmail }).value();
+      const shouldWelcome = shouldSendWelcome(userExists);
 
-  const resolvedPlan = sessionPlan || plan || "";
-  const resolvedIsSub = sessionIsSub || isSub || "";
+      if (!userExists) {
+        db.get("subscribers")
+          .push({
+            email: customerEmail,
+            currentWeek: 0,
+            plan: storedPlan,
+            isSub: true,
+            createdAt: new Date().toISOString(),
+            lastSentAt: null,
+          })
+          .write();
 
-  const redirectPlan = allowedPlans.has(resolvedPlan) ? resolvedPlan : "";
-  const storedPlan = allowedPlans.has(resolvedPlan) ? resolvedPlan : "unknown";
-
-  // ✅ 1) răspuns rapid (userul nu mai așteaptă email / db)
-  res.redirect(
-    `/?session_id=${encodeURIComponent(session_id)}&plan=${encodeURIComponent(
-      redirectPlan
-    )}&isSub=${encodeURIComponent(resolvedIsSub)}`
-  );
-
-  // ✅ 2) restul în fundal
-  setImmediate(async () => {
-    try {
-      if (resolvedIsSub === "true") {
-        const userExists = db.get("subscribers").find({ email: customerEmail }).value();
-        const shouldWelcome = shouldSendWelcome(userExists);
-
-        if (!userExists) {
-          db.get("subscribers")
-            .push({
-              email: customerEmail,
-              currentWeek: 0,
-              plan: storedPlan,
-              isSub: true,
-              createdAt: new Date().toISOString(),
-              lastSentAt: null,
-            })
-            .write();
-
-          console.log(`your plan: ${customerEmail}`);
-        } else {
-          db.get("subscribers")
-            .find({ email: customerEmail })
-            .assign({ isSub: true, plan: storedPlan || userExists.plan })
-            .write();
-        }
+        console.log(`👤 New subscriber saved: ${customerEmail}`);
 
         if (shouldWelcome) {
-          await sendWelcomeEmail(customerEmail);
+          try {
+            await sendWelcomeEmail(customerEmail);
+          } catch (err) {
+            console.log("❌ Welcome email error:", err.message);
+          }
+        }
+      } else {
+        // dacă există deja, asigurăm isSub true
+        db.get("subscribers")
+          .find({ email: customerEmail })
+          .assign({ isSub: true, plan: storedPlan || userExists.plan })
+          .write();
+
+        if (shouldWelcome) {
+          try {
+            await sendWelcomeEmail(customerEmail);
+          } catch (err) {
+            console.log("❌ Welcome email error:", err.message);
+          }
         }
       }
-    } catch (err) {
-      console.error("Post-success work failed:", err.message);
     }
-  });
+
+    // redirect back to frontend with params
+    return res.redirect(`/?session_id=${encodeURIComponent(session_id)}&plan=${encodeURIComponent(redirectPlan)}&isSub=${encodeURIComponent(resolvedIsSub)}`);
+  } catch (err) {
+    console.error("Success Route Error:", err.message);
+    return res.redirect("/");
+  }
 });
 
 // ---- START ----
@@ -323,3 +296,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
+
