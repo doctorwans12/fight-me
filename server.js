@@ -61,7 +61,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // ---- HELPERS ----
-const allowedPlans = new Set(["striker", "grappler", "hybrid", "traditional"]);
+const allowedPlans = new Set(["bold", "calm", "versatile", "elegant"]);
 
 function getBaseUrl(req) {
   // Dacă ai BASE_URL în env (pentru deploy), îl folosim.
@@ -92,7 +92,7 @@ async function sendWeeklyEmail(user) {
   const weekNumber = user.currentWeek + 1;
 
   const mailOptions = {
-    from: `"Personal Trainer" <${process.env.GMAIL_USER}>`,
+    from: `"Love Trainer" <${process.env.GMAIL_USER}>`,
     to: user.email,
     subject: `Your Plan: Week ${weekNumber}`,
     text: msg,
@@ -116,10 +116,10 @@ async function sendWeeklyEmail(user) {
 async function sendWelcomeEmail(email) {
   const welcomeText = weeklyContent[0] || "Welcome!";
   const welcomeMail = {
-    from: `"Personal Trainer" <${process.env.GMAIL_USER}>`,
+    from: `"Love Trainer" <${process.env.GMAIL_USER}>`,
     to: email,
-    subject: "Important: Your Training Results",
-    text: `Hi! Thank you for subscribing.\n\nHere is your professional roadmap (Week 1):\n\n${welcomeText}`,
+    subject: "Important: Your Loveing Results",
+    text: `Hi! Thank you for subscribing.\n\nHere is your professional advices (Week 1):\n\n${welcomeText}`,
   };
 
   await transporter.sendMail(welcomeMail);
@@ -295,3 +295,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
