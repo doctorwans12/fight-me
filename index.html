@@ -65,10 +65,7 @@
             </div>
             <div id="preview-lock" class="locked-overlay">Locked Preview</div>
         </div>
-        <div class="preview-cta" id="preview-cta">
-            <button class="btn btn-opt" onclick="pay(true)">Unlock + Roadmap (subscription)</button>
-            <button class="btn btn-opt" onclick="showBasicOnly()">No thanks, show only basic result</button>
-        </div>
+    
     </div>
 
     <div id="manifesto" class="section">
@@ -146,9 +143,10 @@ What sets you apart: maturity and composure
 <div id="footerBar" class="float-bar">
     <span class="float-title">Make your subscribtion for weekly advices!</span>
     <button class="btn btn-wish" onclick="pay(false)">see the results + subscribtion</button>
-    <button class="btn btn-no" onclick="showBasicOnly()">No thanks, show only basic result</button>
+    <button class="btn btn-no" onclick="pay(true)">No thanks, show only basic result</button>
     <div class="trust-text">One-time payment • Instant access • No automatic subscription</div>
-</div>
+    <div class=for "btn-wish" , "btn-no" print("manifesto")</div>
+    
 
 <script>
 const questions = [
@@ -336,6 +334,7 @@ const questions = [
 </script>
 </body>
 </html>
+
 
 
 
