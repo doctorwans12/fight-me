@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alone Empty Together</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background: #f8f9fa; margin: 0; color: #333; padding-bottom: 160px; }
+        body { font-family: 'Arial', sans-serif; background: #f8f9fa; margin: 0; color: #333; padding-bottom: 180px; }
         .container { max-width: 800px; margin: 40px auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
         .logo { max-width: 280px; display: block; margin: 0 auto 20px; }
         .section { display: none; }
@@ -15,17 +15,14 @@
         .btn-opt { background: #f1f3f5; text-align: left; margin: 8px 0; border: 1px solid #ddd; padding: 15px; width: 100%; color: #333; }
         .btn-opt:hover { background: #e2e6ea; }
 
-        /* Stiluri pentru Rezultat și Blur */
         .result-display-box { background: #e7f5ff; border: 2px solid #228be6; padding: 30px; border-radius: 10px; margin-top: 20px; position: relative; }
-        .blurred { filter: blur(12px); user-select: none; pointer-events: none; opacity: 0.6; }
-        .locked-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); font-weight: bold; z-index: 10; text-align: center; padding: 20px; }
-        
-        .manifesto-text { text-align: left; line-height: 1.8; font-size: 16px; }
-        .result-block { display: none; }
+        .blurred { filter: blur(18px); user-select: none; pointer-events: none; opacity: 0.4; }
+        .locked-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; text-align: center; }
+        .lock-badge { background: white; padding: 15px 25px; border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid #ddd; font-size: 18px; }
 
         .float-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: white; box-shadow: 0 -5px 25px rgba(0,0,0,0.15); padding: 20px 0; z-index: 9999; text-align: center; display: none; }
-        .btn-wish { background: #28a745; color: white; margin: 5px auto; width: 90%; max-width: 300px; display: block; text-decoration: none; }
-        .btn-no { background: #dc3545; color: white; margin: 5px auto; width: 90%; max-width: 300px; display: block; }
+        .btn-sub { background: #28a745; color: white; margin: 5px auto; width: 90%; max-width: 350px; display: block; }
+        .btn-only { background: #007bff; color: white; margin: 5px auto; width: 90%; max-width: 350px; display: block; }
     </style>
 </head>
 <body>
@@ -33,8 +30,8 @@
 <div class="container">
     <div id="intro" class="section active">
         <img src="logo.png" alt="Logo" class="logo">
-        <p style="text-align:center;">Discover your personal love and attraction style. Answer 20 questions to unlock your blueprint.</p>
-        <button class="btn btn-start" onclick="startQuiz()">Continue to Test</button>
+        <p style="text-align:center;">Discover your attraction blueprint. Answer 20 questions to unlock your personalized result.</p>
+        <button class="btn btn-start" onclick="startQuiz()">Continue</button>
     </div>
 
     <div id="quiz" class="section">
@@ -46,9 +43,8 @@
     <div id="result-preview" class="section">
         <h2 style="text-align:center;">Your Personal Analysis</h2>
         <div class="result-display-box">
-            <div id="preview-lock-overlay" class="locked-overlay">
-                <p style="font-size: 20px; color: #000;">RESULT READY</p>
-                <p style="font-weight: normal;">Click the green button below to unlock your full roadmap.</p>
+            <div class="locked-overlay">
+                <div class="lock-badge">🔒 Result Locked</div>
             </div>
             <div id="preview-blur-wrapper" class="blurred">
                 <div id="manifesto-preview-content"></div>
@@ -57,7 +53,7 @@
     </div>
 
     <div id="success-view" class="section">
-        <h1 style="color: #28a745; text-align:center;">Payment Successful! ✔️</h1>
+        <h1 style="color: #28a745; text-align:center;">Access Granted! ✔️</h1>
         <div class="result-display-box">
             <div id="final-result-content"></div>
         </div>
@@ -66,64 +62,52 @@
 </div>
 
 <div id="footerBar" class="float-bar">
-    <span style="display:block; margin-bottom:10px; font-weight:bold;">Unlock your $3 Romantic Roadmap:</span>
-    <button class="btn btn-wish" onclick="pay(false)">See Full Results + Weekly Advice</button>
-    <button class="btn btn-no" onclick="pay(true)">No thanks, show basic only</button>
+    <span style="display:block; margin-bottom:10px; font-weight:bold; font-size: 18px;">How do you want to unlock?</span>
+    <button class="btn btn-sub" onclick="pay(true)">I want Results + Weekly Subscription ($3/mo)</button>
+    <button class="btn btn-only" onclick="pay(false)">I want Only Results (One-time payment)</button>
 </div>
 
 <div id="data-store" style="display:none;">
     <div id="raw-bold">
-        <h3>BOLD – DIRECT FLIRT</h3>
-        <p>You connect through energy, confidence, and clear intent. You don’t wait—you take initiative, create momentum, and build chemistry fast.</p>
-        <p><strong>Strengths:</strong> charisma, courage, strong presence, playful dominance</p>
-        <p><strong>How you attract:</strong> teasing, direct compliments, bold conversation moves</p>
-        <p style="color: #d9534f;">⚠️ Watch out: Slow down sometimes. Listening and pacing will make your impact even stronger.</p>
+        <h3>BOLD – DIRECT ENERGY</h3>
+        <p>You connect through energy, confidence, and clear intent. You don’t wait—you take initiative and build chemistry fast.</p>
     </div>
     <div id="raw-calm">
         <h3>CALM – COMFORT CREATOR</h3>
-        <p>You attract by making people feel safe, seen, and understood. Your presence is grounding, and conversations with you feel natural.</p>
-        <p><strong>Strengths:</strong> empathy, patience, emotional intelligence</p>
-        <p><strong>How you attract:</strong> deep listening, warmth, genuine interest</p>
-        <p style="color: #d9534f;">⚠️ Watch out: Show romantic intent more clearly so you don’t get mistaken for “just friendly.”</p>
+        <p>You attract by making people feel safe and seen. Your presence is grounding and conversations feel natural.</p>
     </div>
     <div id="raw-versatile">
         <h3>VERSATILE – VIBE ADAPTER</h3>
-        <p>You hate rigid rules. You read the room fast and adapt your energy to the moment, switching between humor and depth.</p>
-        <p><strong>Strengths:</strong> flexibility, intuition, social intelligence</p>
-        <p><strong>How you attract:</strong> switching between humor, depth, and flirt</p>
-        <p style="color: #d9534f;">⚠️ Watch out: Consistency. Make sure your interest is clear so you don’t seem indecisive.</p>
+        <p>You read the room fast and adapt your energy. You switch between humor and depth effortlessly.</p>
     </div>
     <div id="raw-elegant">
         <h3>ELEGANT – TIMING & PRECISION</h3>
-        <p>You move with intention. Every word has purpose, and your flirting is subtle, clean, and confident. You value respect and maturity.</p>
-        <p><strong>Strengths:</strong> clarity, discipline, strong boundaries</p>
-        <p><strong>How you attract:</strong> timing, well-chosen words, calm confidence</p>
-        <p style="color: #d9534f;">⚠️ Watch out: Allow more spontaneity so you don’t come off as distant or cold.</p>
+        <p>You move with intention. Your flirting is subtle, clean, and highly confident.</p>
     </div>
 </div>
 
 <script>
 const questions = [
-    { q: "What feels most natural when you talk to the person you like?", a: ["I jump in directly and create chemistry", "I stay calm, listen, and create comfort", "I mix styles depending on the vibe", "I stay controlled, clear, and attentive"] },
-    { q: "What is your biggest strength when you try to win someone over?", a: ["Confidence and initiative", "Empathy and patience", "Adaptability", "Clarity and self-control"] },
-    { q: "How do you like to gain interest?", a: ["With energy and constant flirting", "Through closeness and connection", "By choosing the right moment", "With style and maturity"] },
-    { q: "What kind of ‘first move’ fits you best?", a: ["Direct: I say what I want", "Slow: I build comfort", "Flexible: based on reactions", "Calculated: less, but well done"] },
-    { q: "What pace do you prefer in conversations?", a: ["Fast and playful", "Slow and deep", "Variable, depending on the vibe", "Balanced and clean"] },
-    { q: "What do you focus on when flirting?", a: ["Chemistry and energy", "Comfort and trust", "Direction and signals", "Clarity and timing"] },
-    { q: "What’s your favorite ‘zone’ when talking?", a: ["Teasing and upfront flirting", "Personal talks and closeness", "A mix of jokes and depth", "Mature dialogue, no exaggeration"] },
-    { q: "How do you handle emotions when you like someone?", a: ["I show them without shame", "I dose them and build slowly", "I use them strategically", "I control them and stay composed"] },
-    { q: "What type of interactions excite you the most?", a: ["Jokes, teasing, vibe", "Honest conversations", "Dynamic: sometimes intense, sometimes chill", "Clear, classy dialogue"] },
+    { q: "What feels most natural when you talk to someone you like?", a: ["I jump in directly", "I stay calm and listen", "I mix styles depending on vibe", "I stay controlled and attentive"] },
+    { q: "What is your biggest strength?", a: ["Confidence", "Empathy", "Adaptability", "Self-control"] },
+    { q: "How do you like to gain interest?", a: ["Constant flirting", "Closeness", "Right moment", "Maturity"] },
+    { q: "What kind of ‘first move’ fits you?", a: ["Direct and loud", "Slow and subtle", "Based on their reaction", "Calculated and clean"] },
+    { q: "What pace do you prefer?", a: ["Fast", "Slow", "Variable", "Balanced"] },
+    { q: "What do you focus on?", a: ["Chemistry", "Trust", "Social signals", "Timing"] },
+    { q: "What’s your favorite ‘zone’?", a: ["Teasing", "Personal talks", "Jokes & depth", "Classy dialogue"] },
+    { q: "How do you handle emotions?", a: ["Show them openly", "Build them slowly", "Use them strategically", "Stay composed"] },
+    { q: "What interactions excite you?", a: ["Vibe & teasing", "Honest talks", "Dynamic/Unpredictable", "Clear & classy"] },
     { q: "What best describes your mindset?", a: ["Bold", "Patient", "Versatile", "Disciplined"] },
-    { q: "How do you like to ‘set up’ a conversation?", a: ["Compliment + teasing", "Good questions + listening", "Change the subject when needed", "Observe first, then step in with timing"] },
-    { q: "What’s your go-to defense when panic hits?", a: ["I joke and push forward", "I slow down and create comfort", "I switch tactics", "I stay calm and controlled"] },
-    { q: "What does a perfect date/conversation look like to you?", a: ["Lots of chemistry and energy", "Connection and closeness", "A mix of fun and depth", "Clean communication and respect"] },
-    { q: "How do you recover from an awkward moment?", a: ["I turn it into a joke and move on", "I breathe, slow down, reset", "I change direction", "I stay composed and elegant"] },
-    { q: "What feedback would you like to receive?", a: ["Be more direct", "Maintain closeness", "Be more flexible", "Stay clear and confident"] },
-    { q: "How do you manage your energy long-term?", a: ["Through passion and intensity", "With a calm, steady rhythm", "By alternating bursts and recovery", "Through efficiency, no waste"] },
-    { q: "What makes you dangerous in flirting?", a: ["Charisma and boldness", "Warmth and presence", "Unpredictability", "Perfect timing"] },
-    { q: "Which style do you admire most?", a: ["Bold and spontaneous", "Empathetic and stable", "Balanced and complete", "Mature and elegant"] },
-    { q: "When things don’t go well, you…", a: ["Try harder", "Slow down and reassure", "Change strategy", "Stay disciplined"] },
-    { q: "What’s your long-term goal?", a: ["To be memorable and irresistible", "To build a real connection", "To be complete and natural", "To master communication"] }
+    { q: "How do you set up a conversation?", a: ["Compliments", "Questions", "Switching topics", "Observing first"] },
+    { q: "What’s your defense when panicking?", a: ["I joke/push", "I slow down", "I change tactics", "I stay silent/calm"] },
+    { q: "What does a perfect date look like?", a: ["High energy", "Deep connection", "Mixed fun", "Respectful/Clean"] },
+    { q: "How do you recover from awkwardness?", a: ["I joke it off", "I reset slowly", "I change direction", "I stay elegant"] },
+    { q: "What feedback do you want?", a: ["'You are exciting'", "'You are special'", "'You are fun'", "'You are confident'"] },
+    { q: "Energy management?", a: ["Intensity", "Steady rhythm", "Alternating", "Efficiency"] },
+    { q: "What makes you 'dangerous'?", a: ["Charisma", "Presence", "Unpredictability", "Timing"] },
+    { q: "What style do you admire?", a: ["Spontaneous", "Stable", "Balanced", "Elegant"] },
+    { q: "When things go wrong...", a: ["Try harder", "Give space", "Change strategy", "Stay disciplined"] },
+    { q: "What is your long-term goal?", a: ["Be irresistible", "Build connection", "Be natural", "Master communication"] }
 ];
 
 const scoreKeys = ["bold", "calm", "versatile", "elegant"];
@@ -145,13 +129,12 @@ function startQuiz() {
 
 function loadQ() {
     if (current >= questions.length) {
-        showPreview();
+        finishQuiz();
         return;
     }
     const q = questions[current];
     document.getElementById('q-title').innerText = q.q;
     document.getElementById('q-progress').innerText = `Question ${current + 1} of 20`;
-    
     const container = document.getElementById('q-options');
     container.innerHTML = '';
     
@@ -160,7 +143,7 @@ function loadQ() {
         b.className = 'btn btn-opt';
         b.innerText = opt;
         b.onclick = () => {
-            scores[scoreKeys[index]]++; // 0->bold, 1->calm, 2->versatile, 3->elegant
+            scores[scoreKeys[index]]++;
             current++;
             loadQ();
         };
@@ -168,35 +151,24 @@ function loadQ() {
     });
 }
 
-function showPreview() {
+function finishQuiz() {
     const winner = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-    localStorage.setItem("finalChoice", winner);
-    
-    // Inseram textul in zona de blur
+    localStorage.setItem("userResult", winner);
     document.getElementById('manifesto-preview-content').innerHTML = document.getElementById('raw-' + winner).innerHTML;
-    
     navigate('result-preview');
     document.getElementById('footerBar').style.display = 'block';
 }
 
-function pay(sub) {
-    const choice = localStorage.getItem("finalChoice");
-    if(sub) {
-        // Redirectioneaza la plata (Stripe prin serverul tau)
-        window.location.href = `/pay-session?subscribe=true&choice=${choice}`;
-    } else {
-        // Deblocheaza blur-ul pe loc pentru varianta "No thanks" (Basic)
-        document.getElementById('preview-blur-wrapper').classList.remove('blurred');
-        document.getElementById('preview-lock-overlay').style.display = 'none';
-        document.getElementById('footerBar').style.display = 'none';
-    }
+function pay(isSubscribe) {
+    const choice = localStorage.getItem("userResult") || "bold";
+    // Redirectioneaza catre endpoint-ul tau de plata
+    window.location.href = `/pay-session?subscribe=${isSubscribe}&choice=${choice}`;
 }
 
-// Logică pentru revenirea după plată
 window.onload = () => {
     const params = new URLSearchParams(window.location.search);
     if (params.has('session_id')) {
-        const choice = localStorage.getItem("finalChoice") || "bold";
+        const choice = localStorage.getItem("userResult") || "bold";
         navigate('success-view');
         document.getElementById('footerBar').style.display = 'none';
         document.getElementById('final-result-content').innerHTML = document.getElementById('raw-' + choice).innerHTML;
